@@ -4,7 +4,7 @@ const { Node } = require('./Node.js');
 const { Link } = require('./Link.js');
 
 const {
-  isNode
+  isNode,
 } = require('../utils.js');
 
 class Graph {
@@ -37,12 +37,12 @@ class Graph {
 
         const { data, directed } = newLink;
         const plainLink = new Link(start, end, data, directed);
-        start.links.set(end, plainLink);
-        //end.links.set(start, plainLink);
+        start.links.out.set(end, plainLink);
+        end.links.in.set(start, plainLink);
         if (!directed) {
           const reversedLink = new Link(end, start, data, directed);
-          end.links.set(start, reversedLink);
-          //start.links.set(end, reversedLink);
+          start.links.in.set(end, reversedLink);
+          end.links.out.set(start, reversedLink);
         }
         const sign = directed ? '' : '<';
         console.log(`Connect nodes ${start.id} ${sign}-> ${end.id}`);
@@ -58,17 +58,16 @@ class Graph {
       with(end) {
         if (!isNode(end)) return;
 
-        const link = start.links.get(end);
+        const link = start.links.out.get(end);
         if (!link) return;
-        start.links.delete(end);
+        start.links.out.delete(end);
         if (!link.directed) {
-          const reversedlink = end.links.get(start);
+          const reversedlink = end.links.in.get(start);
           if (!reversedlink) return;
-          end.links.delete(start);
+          end.links.in.delete(start);
         }
 
-        const sign = link.directed ? '' : '<';
-        console.log(`Disconnect nodes ${start.id} ${sign}-> ${end.id}`);
+        console.log(`Disconnect nodes ${start.id} -> ${end.id}`);
         return start.graph;
       }
     };
@@ -80,8 +79,9 @@ class Graph {
     const deleteIndex = nodes.findIndex((item) => item === node);
     if (deleteIndex === -1) return;
 
-    for (const link of node.links.values()) {
-      this.disconnect(link.start).with(link.end);
+    for (const link of node.fullLinks) {
+      this.disconnect(link.start).with(node);
+      this.disconnect(node).with(link.end);
     }
 
     nodes.splice(deleteIndex, 1);

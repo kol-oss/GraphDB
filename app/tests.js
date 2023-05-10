@@ -11,8 +11,9 @@ console.log(persons.vertexes);
 
 persons
   .connect(alex).with(nick)
-  .connect(alex).by(null, true).with(oleg)
+  .connect(alex).by(null, true).with(oleg);
 
-console.log(alex.neighbours);
-console.log(oleg.neighbours);
+persons
+  .delete(nick)
+  .delete(alex);
 
