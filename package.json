@@ -1,0 +1,29 @@
+{
+  "name": "graphdb",
+  "version": "1.0.0",
+  "description": "Graph based database",
+  "main": "tests.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kol-oss/GraphDB.git"
+  },
+  "keywords": [
+    "GraphDB"
+  ],
+  "author": "Mykola Khozhainov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kol-oss/GraphDB/issues"
+  },
+  "homepage": "https://github.com/kol-oss/GraphDB#readme",
+  "devDependencies": {
+    "eslint": "^8.40.0"
+  },
+  "dependencies": {
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.27.5"
+  }
+}

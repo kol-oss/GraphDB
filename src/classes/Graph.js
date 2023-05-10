@@ -16,7 +16,7 @@ class Graph {
 
   add(data) {
     const newNode = new Node(data, this);
-    
+
     this.nodes.push(newNode);
     console.log(`Node ${newNode.id} was added`);
     return newNode;
@@ -25,7 +25,7 @@ class Graph {
   connect(start) {
     if (!isNode(start)) return;
 
-    const newLink = {data: null, directed: false} 
+    const newLink = { data: null, directed: false };
     return {
       by(linkData, directed) {
         newLink.data = linkData;
@@ -42,10 +42,11 @@ class Graph {
           const reversedLink = new Link(end, start, data, directed);
           start.links.set(end, reversedLink);
         }
-        console.log(`Connect nodes ${start.id} ${directed ? '' : '<'}-> ${end.id}`);
+        const sign = directed ? '' : '<';
+        console.log(`Connect nodes ${start.id} ${sign}-> ${end.id}`);
         return start.graph;
       }
-    }
+    };
   }
 
   delete(node) {
@@ -62,11 +63,11 @@ class Graph {
 
   get vertexes() {
     const { nodes } = this;
-    const output = nodes.map(node => node.toString());
+    const output = nodes.map((node) => node.toString());
     return output;
   }
 }
 
 module.exports = {
   Graph
-}
+};
