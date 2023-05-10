@@ -38,12 +38,37 @@ class Graph {
         const { data, directed } = newLink;
         const plainLink = new Link(start, end, data, directed);
         start.links.set(end, plainLink);
+        //end.links.set(start, plainLink);
         if (!directed) {
           const reversedLink = new Link(end, start, data, directed);
-          start.links.set(end, reversedLink);
+          end.links.set(start, reversedLink);
+          //start.links.set(end, reversedLink);
         }
         const sign = directed ? '' : '<';
         console.log(`Connect nodes ${start.id} ${sign}-> ${end.id}`);
+        return start.graph;
+      }
+    };
+  }
+
+  disconnect(start) {
+    if (!isNode(start)) return;
+
+    return {
+      with(end) {
+        if (!isNode(end)) return;
+
+        const link = start.links.get(end);
+        if (!link) return;
+        start.links.delete(end);
+        if (!link.directed) {
+          const reversedlink = end.links.get(start);
+          if (!reversedlink) return;
+          end.links.delete(start);
+        }
+
+        const sign = link.directed ? '' : '<';
+        console.log(`Disconnect nodes ${start.id} ${sign}-> ${end.id}`);
         return start.graph;
       }
     };
@@ -55,7 +80,10 @@ class Graph {
     const deleteIndex = nodes.findIndex((item) => item === node);
     if (deleteIndex === -1) return;
 
-    // TODO: Add links deletion
+    for (const link of node.links.values()) {
+      this.disconnect(link.start).with(link.end);
+    }
+
     nodes.splice(deleteIndex, 1);
     console.log(`Node ${node.id} was deleted`);
     return this;
