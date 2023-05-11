@@ -106,12 +106,6 @@ class Graph {
     console.log(`Node ${node.id} was deleted`);
     return this;
   }
-
-  get vertexes() {
-    const { nodes } = this;
-    const output = nodes.map((node) => node.toString());
-    return output;
-  }
 }
 
 module.exports = {
