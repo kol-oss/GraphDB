@@ -12,11 +12,7 @@ class Node {
       out: new Map()
     };
   }
-  toString() {
-    const { id, data } = this;
-    return { nodeId: id, data };
-  }
-  get fullLinks() {
+  get neighbours() {
     const { links } = this;
     const result = [];
     const keys = Object.keys(links);
@@ -29,26 +25,9 @@ class Node {
 
     return result;
   }
-  get neighbours() {
-    const { links } = this;
-    const output = [];
-    const keys = Object.keys(links);
-
-    for (const key of keys) {
-      for (const link of links[key].values()) {
-        const { start, end, data, directed, weight } = link;
-        output.push({
-          begin: start.id,
-          finish: end.id,
-          type: key,
-          data,
-          directed,
-          weight
-        });
-      }
-    }
-
-    return output;
+  static getById(graph, nodeId) {
+    const node = graph.nodes.find((element) => element.id === nodeId);
+    return node;
   }
 }
 

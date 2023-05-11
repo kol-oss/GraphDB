@@ -16,6 +16,10 @@ class Graph {
 
   add(data) {
     const newNode = new Node(data, this);
+    if (this.base && !(data instanceof this.base)) {
+      console.log('Node data doesn\'t fit to the base');
+      return;
+    }
 
     this.nodes.push(newNode);
     console.log(`Node ${newNode.id} was added`);
@@ -73,13 +77,17 @@ class Graph {
     };
   }
 
+  from(node) {
+    if (!isNode(node)) return;
+  }
+
   delete(node) {
     if (!isNode(node)) return;
     const { nodes } = this;
     const deleteIndex = nodes.findIndex((item) => item === node);
     if (deleteIndex === -1) return;
 
-    for (const link of node.fullLinks) {
+    for (const link of node.neighbours) {
       this.disconnect(link.start).with(node);
       this.disconnect(node).with(link.end);
     }
