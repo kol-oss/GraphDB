@@ -5,6 +5,7 @@ const { Link } = require('./Link.js');
 
 const {
   isNode,
+  checkCondition
 } = require('../utils.js');
 
 class Graph {
@@ -77,8 +78,17 @@ class Graph {
     };
   }
 
-  from(node) {
+  filter(node) {
     if (!isNode(node)) return;
+    const links = node.neighbours;
+    return {
+      where(condition) {
+        const callback = (link) => checkCondition(link.data, condition);
+        const result = links.filter(callback);
+        if (result) console.log(result);
+        return node.graph;
+      }
+    };
   }
 
   delete(node) {
