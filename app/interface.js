@@ -3,8 +3,9 @@
 const readline = require('readline');
 
 const { Graph } = require('../src/classes/Graph.js');
-const { Node } = require('../src/classes/Node.js');
 const { logger } = require('../src/classes/Logger.js');
+
+const { getObject, getNode } = require('./tools.js');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -13,25 +14,15 @@ const rl = readline.createInterface({
 });
 
 rl.prompt();
-logger.log('Welcome to GraphDB. Type \'help\' to see all commands.');
-
-let graph;
 
 function question(message) {
   const result = new Promise((resolve) => rl.question(message, resolve));
   return result;
 }
 
-async function getObject(message) {
-  const data = await question(message);
-  if (!data) return;
-  const parsedData = JSON.parse(data);
-  if (typeof parsedData !== 'object') {
-    logger.log('Wrong data type. Try again', 'error');
-    return;
-  }
-  return parsedData;
-}
+logger.log('Welcome to GraphDB. Type \'help\' to see all commands.');
+
+let graph;
 
 const commands = {
   async help() {
@@ -57,8 +48,11 @@ const commands = {
       logger.log('ERROR: Firstly create graph to add nodes', 'error');
       return;
     }
-    const data = await getObject('Enter node\'s data as JSON object: ');
-    graph.add(data);
+    const data = await question('Enter node\'s data as JSON object: ');
+    const parsed = getObject(data);
+    if (data && !parsed) return;
+
+    graph.add(parsed);
   },
   async nodes() {
     if (!graph) {
@@ -76,19 +70,22 @@ const commands = {
       return;
     }
     const startNodeId = await question('Enter start node\'s id: ');
-    const start = Node.getById(graph, +startNodeId);
-    const endNodeId = await question('Enter start node\'s id: ');
-    const end = Node.getById(graph, +endNodeId);
-    if (!start || !end) {
-      logger.log('Wrong input id.', 'error');
-      return;
-    }
+    const start = getNode(graph, +startNodeId);
+
+    const endNodeId = await question('Enter end node\'s id: ');
+    const end = getNode(graph, +endNodeId);
+
+    if (!start || !end) return;
+
     const direction = await question('Is this connection directed: [yes/no] ');
     const isdirected = direction === 'yes';
-    const data = await getObject('Enter link\'s data as JSON object: ');
+    const data = await question('Enter link\'s data as JSON object: ');
+
+    const parsed = getObject(data);
+    if (data && !parsed) return;
 
     graph
-      .connect(start).by(data, isdirected).with(end);
+      .connect(start).by(parsed, isdirected).with(end);
   },
   async connections() {
     if (!graph) {
@@ -96,16 +93,42 @@ const commands = {
       return;
     }
     const nodeId = await question('Enter node\'s id: ');
-    const node = Node.getById(graph, +nodeId);
-    if (!node) {
-      logger.log('Wrong input id', 'error');
-      return;
-    }
+    const node = getNode(graph, +nodeId);
+    if (!node) return;
 
     const { neighbours } = node;
     for (const link of neighbours) {
       logger.link(link);
     }
+  },
+  async delete() {
+    if (!graph) {
+      logger.log('ERROR: Firstly create graph to check links', 'error');
+      return;
+    }
+    const nodeId = await question('Enter node\'s id to delete: ');
+    const node = getNode(graph, +nodeId);
+    if (!node) return;
+
+    graph.delete(node);
+  },
+  async filter() {
+    if (!graph) {
+      logger.log('ERROR: Firstly create graph to check links', 'error');
+      return;
+    }
+    const nodeId = await question('Enter node\'s id to filter links: ');
+    const node = getNode(graph, +nodeId);
+    if (!node) return;
+
+    const condition = await question('Enter link filter condition as JSON: ');
+
+    const parsed = getObject(condition);
+    if (condition && !parsed) return;
+
+    graph
+      .filter(node)
+      .where(parsed);
   }
 };
 
