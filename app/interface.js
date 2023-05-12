@@ -13,7 +13,7 @@ const rl = readline.createInterface({
 });
 
 rl.prompt();
-console.log('Welcome to GraphDB. Type \'help\' to see all commands.');
+logger.log('Welcome to GraphDB. Type \'help\' to see all commands.');
 
 let graph;
 
@@ -24,9 +24,10 @@ function question(message) {
 
 async function getObject(message) {
   const data = await question(message);
+  if (!data) return;
   const parsedData = JSON.parse(data);
   if (typeof parsedData !== 'object') {
-    console.log('Wrong data type. Try again');
+    logger.log('Wrong data type. Try again', 'error');
     return;
   }
   return parsedData;
@@ -35,7 +36,7 @@ async function getObject(message) {
 const commands = {
   async help() {
     const actions = Object.keys(commands);
-    console.log('Available commands:');
+    logger.log('Available commands:');
     for (const action of actions) {
       console.log(`- ${action}`);
     }
@@ -43,17 +44,17 @@ const commands = {
   async new() {
     const name = await question('Enter graph\'s name: ');
     if (graph) {
-      console.log('You have already created graph');
+      logger.log('You have already created graph', 'error');
       return;
     }
     const newGraph = new Graph(name);
 
     graph = newGraph;
-    console.log(`Graph ${name} was successfully created`);
+    logger.log(`Graph ${name} was successfully created`, 'success');
   },
   async add() {
     if (!graph) {
-      console.log('ERROR: Firstly create graph to add nodes');
+      logger.log('ERROR: Firstly create graph to add nodes', 'error');
       return;
     }
     const data = await getObject('Enter node\'s data as JSON object: ');
@@ -61,17 +62,17 @@ const commands = {
   },
   async nodes() {
     if (!graph) {
-      console.log('ERROR: Firstly create graph to check nodes');
+      logger.log('ERROR: Firstly create graph to check nodes', 'error');
       return;
     }
     const { nodes } = graph;
     for (const node of nodes) {
-      logger.printNode(node);
+      logger.node(node);
     }
   },
   async connect() {
     if (!graph) {
-      console.log('ERROR: Firstly create graph to connect nodes');
+      logger.log('ERROR: Firstly create graph to connect nodes', 'error');
       return;
     }
     const startNodeId = await question('Enter start node\'s id: ');
@@ -79,7 +80,7 @@ const commands = {
     const endNodeId = await question('Enter start node\'s id: ');
     const end = Node.getById(graph, +endNodeId);
     if (!start || !end) {
-      console.log('Wrong input id.');
+      logger.log('Wrong input id.', 'error');
       return;
     }
     const direction = await question('Is this connection directed: [yes/no] ');
@@ -91,16 +92,19 @@ const commands = {
   },
   async connections() {
     if (!graph) {
-      console.log('ERROR: Firstly create graph to check links');
+      logger.log('ERROR: Firstly create graph to check links', 'error');
       return;
     }
     const nodeId = await question('Enter node\'s id: ');
     const node = Node.getById(graph, +nodeId);
-    if (!node) { console.log('Wrong input id.'); return; }
+    if (!node) {
+      logger.log('Wrong input id', 'error');
+      return;
+    }
 
     const { neighbours } = node;
     for (const link of neighbours) {
-      logger.printLink(link);
+      logger.link(link);
     }
   }
 };
@@ -110,10 +114,12 @@ rl
     try {
       const command = commands[message];
       if (command) await command();
-      else console.log('Unknown command. Use \'help\' to show all of them');
+      else {
+        logger.log('Unknown command. Use \'help\' to see all', 'error');
+      }
       rl.prompt();
     } catch (error) {
-      console.log(error.message);
+      logger.log(error.message, 'error');
     }
   })
   .on('exit', () => {

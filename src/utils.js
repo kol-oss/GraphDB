@@ -9,9 +9,6 @@ function checkCondition(data, conditions) {
   const dataKeys = Object.keys(data);
   const condKeys = Object.keys(conditions);
 
-  console.log(dataKeys);
-  console.log(condKeys);
-
   const existingKeys = condKeys.filter((key) => dataKeys.includes(key));
   if (!existingKeys) return;
 
