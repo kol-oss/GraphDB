@@ -1,6 +1,6 @@
 'use strict';
 
-const { Node } = require('./Node.js');
+const { Node } = require('../../src/classes/Node.js');
 
 const COLOURS = {
   'default': '\x1b[37m', // WHITE

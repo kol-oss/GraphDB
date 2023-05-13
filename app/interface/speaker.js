@@ -2,8 +2,8 @@
 
 const readline = require('readline');
 
-const { Graph } = require('../src/classes/Graph.js');
-const { logger } = require('../src/classes/Logger.js');
+const { Graph } = require('../../src/classes/Graph.js');
+const { logger } = require('./Logger.js');
 
 const { getObject, getNode } = require('./tools.js');
 
@@ -123,6 +123,7 @@ const commands = {
 
     const condition = await question('Enter link filter condition as JSON: ');
 
+    if (!condition) return;
     const parsed = getObject(condition);
     if (condition && !parsed) return;
 

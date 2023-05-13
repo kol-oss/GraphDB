@@ -1,7 +1,7 @@
 'use strict';
 
-const { logger } = require('../src/classes/Logger.js');
-const { Node } = require('../src/classes/Node.js');
+const { logger } = require('./Logger.js');
+const { Node } = require('../../src/classes/Node.js');
 
 function getObject(data) {
   if (!data) return;

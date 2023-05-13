@@ -29,6 +29,10 @@ class Node {
     const node = graph.nodes.find((element) => element.id === nodeId);
     return node;
   }
+  static getByData(graph, data) {
+    const node = graph.nodes.find((element) => element.data === data);
+    return node;
+  }
 }
 
 module.exports = {
