@@ -2,7 +2,7 @@
   "name": "graphdb",
   "version": "1.0.0",
   "description": "Graph based database",
-  "main": "tests.js",
+  "main": "app/interface/commands.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,7 +15,7 @@
     "graphdb",
     "database"
   ],
-  "author": "Mykola Khozhainov",
+  "author": "kol-oss",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kol-oss/GraphDB/issues"
