@@ -11,7 +11,9 @@
     "url": "git+https://github.com/kol-oss/GraphDB.git"
   },
   "keywords": [
-    "GraphDB"
+    "graph",
+    "graphdb",
+    "database"
   ],
   "author": "Mykola Khozhainov",
   "license": "MIT",

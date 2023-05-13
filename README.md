@@ -1,5 +1,13 @@
 # GraphDB
-![](images/graphdb.png)
+<div align="center">
+  <a href="https://github.com/kovaliovev/ip-tool">
+    <img
+      width="480"
+      alt="IP-TOOL - easy work with ip addresses"
+      src="images/graphdb.png"
+    />
+  </a>
+</div>
 ## General information
 > __Graph database__ stores nodes and relationships instead of tables, or documents. Data is stored just like you might sketch ideas on a whiteboard. Your data is stored without restricting it to a pre-defined model, allowing a very flexible way of thinking about and using it.
 ## Instalation
@@ -8,7 +16,7 @@
 git clone https://github.com/kol-oss/GraphDB.git
 ```
 ## Usage
-To show all availbale methods and functions of GraphDB, I added two realisation exapmles. 
+To show all availbale methods and functions of GraphDB, I added two realisation examples for different usage purposes. 
 ### Dijkstra's algorithm
 > Dijkstra's algorithm is an algorithm for finding the shortest paths between nodes in a weighted graph, which may represent, for example, road networks. It was conceived by computer scientist Edsger W. Dijkstra in 1956 and published three years later.
 
