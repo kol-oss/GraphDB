@@ -1,12 +1,10 @@
 # GraphDB
 <div align="center">
-  <a href="https://github.com/kovaliovev/ip-tool">
-    <img
+  <img
       width="480"
       alt="IP-TOOL - easy work with ip addresses"
       src="images/graphdb.png"
-    />
-  </a>
+  />
 </div>
 
 ## General information
