@@ -70,10 +70,10 @@ const commands = {
       return;
     }
     const startNodeId = await question('Enter start node\'s id: ');
-    const start = getNode(graph, +startNodeId);
+    const start = getNode(graph, parseInt(startNodeId));
 
     const endNodeId = await question('Enter end node\'s id: ');
-    const end = getNode(graph, +endNodeId);
+    const end = getNode(graph, parseInt(endNodeId));
 
     if (!start || !end) return;
 
@@ -85,7 +85,7 @@ const commands = {
     if (data && !parsed) return;
 
     graph
-      .connect(start).by(parsed, isdirected).with(end);
+      .connect(start).by(parsed, 1, isdirected).with(end);
   },
   async connections() {
     if (!graph) {

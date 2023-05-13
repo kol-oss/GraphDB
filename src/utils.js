@@ -5,12 +5,12 @@ const { Node } = require('./classes/Node.js');
 const isNode = (node) => node instanceof Node;
 
 function checkCondition(data, conditions) {
-  if (!data || !conditions) return;
+  if (!data || !conditions) return false;
   const dataKeys = Object.keys(data);
   const condKeys = Object.keys(conditions);
 
   const existingKeys = condKeys.filter((key) => dataKeys.includes(key));
-  if (!existingKeys) return;
+  if (!existingKeys) return false;
 
   let result;
 
@@ -22,7 +22,7 @@ function checkCondition(data, conditions) {
       result = data[key] === condition;
     }
 
-    if (!result) return;
+    if (!result) return false;
   }
   return true;
 }

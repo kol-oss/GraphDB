@@ -3,7 +3,7 @@
 let COUNTER = 0;
 
 class Link {
-  constructor(start, end, data, directed = false, weight) {
+  constructor(start, end, data, weight, directed = false) {
     this.id = ++COUNTER;
     this.start = start;
     this.end = end;

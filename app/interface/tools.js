@@ -4,13 +4,20 @@ const { logger } = require('./Logger.js');
 const { Node } = require('../../src/classes/Node.js');
 
 function getObject(data) {
-  if (!data) return;
-  const parsedData = JSON.parse(data);
-  if (typeof parsedData !== 'object') {
-    logger.log('Wrong data type. Try again', 'error');
-    return;
+  try {
+    const parsedData = JSON.parse(data);
+    if (parsedData && typeof parsedData !== 'object') {
+      logger.log('Wrong data type. Try again', 'error');
+      return;
+    }
+    return parsedData;
+  } catch (error) {
+    if (!data)
+      return {};
+    logger.log(error, 'error');
+    return false;
   }
-  return parsedData;
+
 }
 
 function getNode(graph, nodeId) {
@@ -18,7 +25,7 @@ function getNode(graph, nodeId) {
     logger.log('ERROR: Firstly create graph to check links', 'error');
     return;
   }
-  const node = Node.getById(graph, +nodeId);
+  const node = Node.getById(graph, parseInt(nodeId));
   if (!node) {
     logger.log('Wrong input node id. Try again', 'error');
     return;

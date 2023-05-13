@@ -32,7 +32,7 @@ class Graph {
 
     const newLink = { data: null, directed: false, weight: 1 };
     return {
-      by(linkData, directed, weight = 1) {
+      by(linkData, weight = 1, directed = false) {
         newLink.data = linkData;
         newLink.directed = directed;
         newLink.weight = weight;
@@ -42,11 +42,11 @@ class Graph {
         if (!isNode(end)) return;
 
         const { data, directed, weight } = newLink;
-        const plainLink = new Link(start, end, data, directed, weight);
+        const plainLink = new Link(start, end, data, weight, directed);
         start.links.out.set(end, plainLink);
         end.links.in.set(start, plainLink);
         if (!directed) {
-          const reversedLink = new Link(end, start, data, directed, weight);
+          const reversedLink = new Link(end, start, data, weight, directed);
           start.links.in.set(end, reversedLink);
           end.links.out.set(start, reversedLink);
         }

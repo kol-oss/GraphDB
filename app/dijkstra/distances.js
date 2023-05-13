@@ -4,10 +4,14 @@ const { cities } = require('./input.js');
 
 function getMin(map) {
   let minWeight = Infinity;
+  let minNode;
 
-  minWeight = Math.min(...map.keys());
-
-  const minNode = map.get(minWeight);
+  for (const [node, weight] of map.entries()) {
+    if (weight < minWeight) {
+      minWeight = weight;
+      minNode = node;
+    }
+  }
   return { weight: minWeight, node: minNode };
 }
 
@@ -16,13 +20,13 @@ function distances(start) {
   const ways = new Map(); // weight => node
   const toCheck = new Map(); // weight => node
 
-  toCheck.set(0, start); // set startpoint
+  toCheck.set(start, 0); // set startpoint
 
   let current;
-  while (toCheck.size !== 0) {
+  while (toCheck.size) {
     current = getMin(toCheck);
     const { node, weight } = current;
-    toCheck.delete(weight);
+    toCheck.delete(node);
 
     const links = node.links.out;
 
@@ -35,11 +39,11 @@ function distances(start) {
       const { data } = linkEnd;
       const existing = ways.get(data);
 
-      if (!existing)
-        ways.set(data, updated);
-      if (existing > updated)
-        ways.set(data, updated);
-      toCheck.set(updated, linkEnd);
+      const optimal = (!existing || updated < existing) ? updated : existing;
+
+      if (!existing || existing > updated)
+        ways.set(data, optimal);
+      toCheck.set(linkEnd, optimal);
     }
     checked.push(node);
   }

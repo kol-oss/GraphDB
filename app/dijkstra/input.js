@@ -14,22 +14,22 @@ const kharkiv = cities.add('Kharkiv');
 const donetsk = cities.add('Donetsk');
 
 cities
-  .connect(vinitsa).by(null, false, 300).with(lviv)
-  .connect(vinitsa).by(null, false, 200).with(kiev)
-  .connect(vinitsa).by(null, false, 350).with(odesa)
-  .connect(vinitsa).by(null, false, 500).with(dnipro);
+  .connect(vinitsa).by(null, 300).with(lviv)
+  .connect(vinitsa).by(null, 200).with(kiev)
+  .connect(vinitsa).by(null, 350).with(odesa)
+  .connect(vinitsa).by(null, 500).with(dnipro);
 
 cities
-  .connect(kharkiv).by(null, false, 250).with(donetsk)
-  .connect(kharkiv).by(null, false, 150).with(dnipro)
-  .connect(kharkiv).by(null, false, 400).with(kiev);
+  .connect(kharkiv).by(null, 250).with(donetsk)
+  .connect(kharkiv).by(null, 150).with(dnipro)
+  .connect(kharkiv).by(null, 400).with(kiev);
 
 cities
-  .connect(dnipro).by(null, false, 200).with(donetsk)
-  .connect(dnipro).by(null, false, 400).with(kherson);
+  .connect(dnipro).by(null, 200).with(donetsk)
+  .connect(dnipro).by(null, 400).with(kherson);
 
 cities
-  .connect(odesa).by(null, false, 150).with(kherson);
+  .connect(odesa).by(null, 150).with(kherson);
 
 
 module.exports = {
