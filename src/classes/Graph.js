@@ -58,7 +58,7 @@ class Graph {
         }
 
         console.log(`Create link ${linkString}`);
-        return source.graph;
+        return this;
       }
     };
   }
@@ -127,20 +127,6 @@ class Graph {
     return graph;
   }
 }
-
-const graph = new Graph('CITIES', false);
-
-const kiev = graph.addNode('KIEV');
-const kherson = graph.addNode('KHERSON');
-
-const [odessa] = graph.addManyNodes('ODESSA', 'KHARKIV');
-
-graph.linkNode(kiev).with(kherson);
-graph.linkNode(kiev).with(odessa);
-
-//Graph.clearGraph(graph);
-
-console.log(graph.toString());
 
 module.exports = {
   Graph
