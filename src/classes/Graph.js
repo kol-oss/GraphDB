@@ -3,111 +3,144 @@
 const { Node } = require('./Node.js');
 const { Link } = require('./Link.js');
 
-const {
-  isNode,
-  checkCondition
-} = require('../utils.js');
-
 class Graph {
-  constructor(name, base) {
+  constructor(name, isDirected = false) {
     this.name = name;
-    this.base = base;
-    this.nodes = new Array();
+    this.isDirected = isDirected;
+    this.nodes = new Set();
   }
 
-  add(data) {
-    const newNode = new Node(data, this);
-    if (this.base && !(data instanceof this.base)) {
-      console.log('Node data doesn\'t fit to the base');
-      return;
-    }
+  addNode(data) {
+    const newNode = new Node(this, data);
 
-    this.nodes.push(newNode);
-    console.log(`Node ${newNode.id} was added`);
+    this.nodes.add(newNode);
+    console.log('Node was added');
     return newNode;
   }
 
-  connect(start) {
-    if (!isNode(start)) return;
+  addManyNodes(...args) {
+    const nodes = [];
+    const data = new Set(args);
 
-    const newLink = { data: null, directed: false, weight: 1 };
-    return {
-      by(linkData, weight = 1, directed = false) {
-        newLink.data = linkData;
-        newLink.directed = directed;
-        newLink.weight = weight;
-        return this;
-      },
-      with(end) {
-        if (!isNode(end)) return;
-
-        const { data, directed, weight } = newLink;
-        const plainLink = new Link(start, end, data, weight, directed);
-        start.links.out.set(end, plainLink);
-        end.links.in.set(start, plainLink);
-        if (!directed) {
-          const reversedLink = new Link(end, start, data, weight, directed);
-          start.links.in.set(end, reversedLink);
-          end.links.out.set(start, reversedLink);
-        }
-        const sign = directed ? '' : '<';
-        console.log(`Connect nodes ${start.id} ${sign}-> ${end.id}`);
-        return start.graph;
-      }
-    };
-  }
-
-  disconnect(start) {
-    if (!isNode(start)) return;
-
-    return {
-      with(end) {
-        if (!isNode(end)) return;
-
-        const link = start.links.out.get(end);
-        if (!link) return;
-        start.links.out.delete(end);
-        if (!link.directed) {
-          const reversedlink = end.links.in.get(start);
-          if (!reversedlink) return;
-          end.links.in.delete(start);
-        }
-
-        console.log(`Disconnect nodes ${start.id} -> ${end.id}`);
-        return start.graph;
-      }
-    };
-  }
-
-  filter(node) {
-    if (!isNode(node)) return;
-    const links = node.neighbours;
-    return {
-      where(condition) {
-        const callback = (link) => checkCondition(link.data, condition);
-        const result = links.filter(callback);
-        if (result) console.log(result);
-        return node.graph;
-      }
-    };
-  }
-
-  delete(node) {
-    if (!isNode(node)) return;
-    const { nodes } = this;
-    const deleteIndex = nodes.findIndex((item) => item === node);
-    if (deleteIndex === -1) return;
-
-    for (const link of node.neighbours) {
-      this.disconnect(link.start).with(node);
-      this.disconnect(node).with(link.end);
+    for (const node of data) {
+      const newNode = this.addNode(node);
+      nodes.push(newNode);
     }
 
-    nodes.splice(deleteIndex, 1);
-    console.log(`Node ${node.id} was deleted`);
+    return nodes;
+  }
+
+  linkNode(source) {
+    return {
+      with(target, weight = 1, data = undefined) {
+        const link = new Link(target, weight, data);
+        const { isDirected: directed } = this;
+
+        const { data: srcData, links: srcLinks } = source;
+
+        const linkString = `${srcData} ${directed ? '' : '<'}-> ${target.data}`;
+
+        if (Link.isExist(source, target)) {
+          console.log(`Link [${linkString}] already exist`);
+          return;
+        }
+
+        srcLinks.add(link);
+
+        // CHECK FOR UNDIRECTED
+        if (!directed) {
+          const reversed = new Link(source, weight, data);
+          const { links: targetLinks } = target;
+
+          if (!Link.isExist(target, source)) {
+            targetLinks.add(reversed);
+          }
+        }
+
+        console.log(`Create link ${linkString}`);
+        return source.graph;
+      }
+    };
+  }
+
+  unlinkInOneDirection(source, target) {
+    if (Link.isExist(source, target)) {
+      const { links: srcLinks } = source;
+
+      const link = source.getLinkTo(target);
+      srcLinks.delete(link);
+    }
+  }
+
+  unlinkNodes(source, target) {
+    this.unlinkInOneDirection(source, target);
+
+    if (!this.isDirected) {
+      this.unlinkInOneDirection(target, source);
+    }
+  }
+
+  getNodeByData(data) {
+    const nodes = this.nodes;
+
+    for (const node of nodes) {
+      if (node.data === data)
+        return node;
+    }
+  }
+
+  deleteNode(nodeToDelete) {
+    if (!(nodeToDelete instanceof Node)) {
+      throw new Error('Node must be instance of class "Node"');
+    }
+
+    for (const node of this.nodes) {
+      if (Link.isExist(node, nodeToDelete)) {
+        this.unlinkNodes(node, nodeToDelete);
+      }
+    }
+
+    this.nodes.delete(nodeToDelete);
+    console.log('Node was deleted');
     return this;
   }
+
+  toString() {
+    const { nodes } = this;
+
+    console.log(`Graph ${this.name}:`);
+    for (const node of nodes) {
+      console.log(node.toString());
+    }
+  }
+
+  static clearGraph(graph) {
+    if (!(graph instanceof Graph)) {
+      throw new Error('Argument must be instance of "Graph" class');
+    }
+
+    for (const node of graph.nodes) {
+      graph.deleteNode(node);
+    }
+
+    console.log(`Graph [${graph.name}] was cleared`);
+    return graph;
+  }
 }
+
+const graph = new Graph('CITIES', false);
+
+const kiev = graph.addNode('KIEV');
+const kherson = graph.addNode('KHERSON');
+
+const [odessa] = graph.addManyNodes('ODESSA', 'KHARKIV');
+
+graph.linkNode(kiev).with(kherson);
+graph.linkNode(kiev).with(odessa);
+
+//Graph.clearGraph(graph);
+
+console.log(graph.toString());
 
 module.exports = {
   Graph

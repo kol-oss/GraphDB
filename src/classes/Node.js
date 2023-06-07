@@ -1,37 +1,43 @@
 'use strict';
 
-let COUNTER = 0;
-
 class Node {
-  constructor(data, graph) {
-    this.id = ++COUNTER;
+  constructor(graph, data) {
     this.data = data;
     this.graph = graph;
-    this.links = {
-      in: new Map(),
-      out: new Map()
-    };
+    this.links = new Set();
   }
-  get neighbours() {
-    const { links } = this;
-    const result = [];
-    const keys = Object.keys(links);
 
-    for (const key of keys) {
-      for (const link of links[key].values()) {
-        result.push(link);
+  getLinkTo(target) {
+    for (const link of this.links) {
+      if (link.target === target)
+        return link;
+    }
+  }
+
+  toString() {
+    let stringified = `Node ${this.data}:`;
+    const { links } = this;
+
+    for (const link of links) {
+      const { target, weight, data } = link;
+      stringified += `\n-> ${target.data} (${weight})`;
+
+      if (data) {
+        stringified += ` (${data})`;
       }
     }
 
-    return result;
+    return stringified;
   }
-  static getById(graph, nodeId) {
-    const node = graph.nodes.find((element) => element.id === nodeId);
-    return node;
-  }
-  static getByData(graph, data) {
-    const node = graph.nodes.find((element) => element.data === data);
-    return node;
+
+  getLinkedNodes() {
+    const linked = new Set();
+
+    for (const link of this.links) {
+      linked.add(link.target);
+    }
+
+    return linked;
   }
 }
 
