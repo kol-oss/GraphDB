@@ -46,12 +46,12 @@ function findMinNode(nodes, distances, visited) {
 
 function buildFullPath(target, distances) {
   const path = [target];
-  let currentPrev = target;
+  let current = target;
 
-  while (currentPrev) {
-    currentPrev = distances.get(currentPrev).previous;
-    if (currentPrev) {
-      path.unshift(currentPrev);
+  while (current) {
+    current = distances.get(current).previous;
+    if (current) {
+      path.unshift(current);
     }
   }
 
