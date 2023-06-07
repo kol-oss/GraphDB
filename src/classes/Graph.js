@@ -103,7 +103,7 @@ class Graph {
 
         const linkString = `${srcData} ${directed ? '' : '<'}-> ${target.data}`;
 
-        if (Link.isExist(source, target)) {
+        if (source.hasLinkWith(target)) {
           console.log(`Link [${linkString}] already exist`);
           return;
         }
@@ -115,7 +115,7 @@ class Graph {
           const reversed = new Link(source, weight, data);
           const { links: targetLinks } = target;
 
-          if (!Link.isExist(target, source)) {
+          if (!target.hasLinkWith(source)) {
             targetLinks.add(reversed);
           }
         }
@@ -127,7 +127,7 @@ class Graph {
   }
 
   unlinkInOneDirection(source, target) {
-    if (Link.isExist(source, target)) {
+    if (source.hasLinkWith(target)) {
       const { links: srcLinks } = source;
 
       const link = source.getLinkTo(target);
@@ -150,7 +150,7 @@ class Graph {
 
     const nodes = this.getNodes();
     for (const node of nodes) {
-      if (Link.isExist(node, nodeToDelete)) {
+      if (node.hasLinkWith(nodeToDelete)) {
         this.unlinkNodes(node, nodeToDelete);
       }
     }

@@ -51,6 +51,14 @@ class Node {
 
     return linked;
   }
+
+  hasLinkWith(target) {
+    for (const link of this.links) {
+      if (link.target === target) {
+        return true;
+      }
+    }
+  }
 }
 
 module.exports = {
