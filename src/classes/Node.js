@@ -1,7 +1,10 @@
 'use strict';
 
+let counter = 0;
+
 class Node {
   constructor(graph, data) {
+    this.id = counter++;
     this.data = data;
     this.graph = graph;
     this.links = new Set();
@@ -14,16 +17,25 @@ class Node {
     }
   }
 
+  getData() {
+    const { graph } = this;
+    const { keyField } = graph;
+
+    const { data } = this;
+    return keyField ? data[keyField] : data;
+  }
+
   toString() {
-    let stringified = `Node ${this.data}:`;
-    const { links } = this;
+    const { links, data: nodeData } = this;
+    let stringified = `Node ${this.getData()}:\n> Data: ${nodeData}`;
 
     for (const link of links) {
-      const { target, weight, data } = link;
-      stringified += `\n-> ${target.data} (${weight})`;
+      const { target, weight, data: linkData } = link;
 
-      if (data) {
-        stringified += ` (${data})`;
+      stringified += `\n-> ${target.getData()} (${weight})`;
+
+      if (linkData) {
+        stringified += ` (${linkData})`;
       }
     }
 

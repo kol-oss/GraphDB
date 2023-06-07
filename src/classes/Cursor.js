@@ -1,25 +1,24 @@
 'use strict';
 
-const { Graph } = require('./Graph');
-
 class Cursor {
   findShortestPath(source, target) {
     if (source.graph !== target.graph) {
-      throw new Error('Source and target nodes must be from one graph');
+      throw new Error('Source and target nodes must be from the same graph');
     }
 
     const { nodes } = source.graph;
 
-    const weights = new Map(); // node => [weight, prev]
+    const distances = new Map(); // node => [distance, previous]
     const visited = new Set();
     const queue = [];
 
     for (const node of nodes) {
-      weights.set(node, [Infinity, null]);
+      distances.set(node, [Infinity, null]);
     }
 
-    weights.set(source, [0, null]);
+    distances.set(source, [0, null]);
     queue.push(source);
+
     while (queue.length !== 0) {
       const currentNode = queue.shift();
       if (visited.has(currentNode)) {
@@ -29,50 +28,33 @@ class Cursor {
       visited.add(currentNode);
 
       let minNode = null;
-      let minWeight = Infinity;
+      let minDistance = Infinity;
 
       for (const link of currentNode.links) {
         const { weight, target: linkTarget } = link;
-        const [ currentWeight ] = weights.get(currentNode);
-        const [ targetWeight ] = weights.get(linkTarget);
+        const [ currentDistance ] = distances.get(currentNode);
+        const [ targetDistance ] = distances.get(linkTarget);
 
-        const changedWeight = currentWeight + weight;
+        const updatedDistance = currentDistance + weight;
 
-        if (targetWeight > changedWeight) {
-          weights.set(linkTarget, [ changedWeight, currentNode ]);
+        if (targetDistance > updatedDistance) {
+          distances.set(linkTarget, [ updatedDistance, currentNode ]);
         }
 
-        if (minWeight > weight && !visited.has(linkTarget)) {
-          minWeight = weight;
+        if (minDistance > weight && !visited.has(linkTarget)) {
+          minDistance = weight;
           minNode = linkTarget;
         }
       }
-      if (minNode) queue.push(minNode);
+      if (minNode) {
+        queue.push(minNode);
+      }
     }
-    return weights.get(target);
+
+    const [distance, previous] = distances.get(target);
+    return distance === Infinity ? null : { distance, previous };
   }
 }
-
-const cities = new Graph('CITIES', false);
-const [
-  kiev,
-  kherson,
-  lviv,
-  odessa
-] = cities.addManyNodes('KIEV', 'KHERSON', 'LVIV', 'ODESSA');
-
-cities.linkNode(kiev)
-  .with(kherson, 800)
-  .with(lviv, 900)
-  .with(odessa, 1100);
-
-cities.linkNode(kherson)
-  .with(lviv, 1200)
-  .with(odessa, 200);
-
-const cursor = new Cursor();
-const answer = cursor.findShortestPath(odessa, kiev);
-console.log(answer);
 
 module.exports = {
   Cursor
