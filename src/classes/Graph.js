@@ -22,7 +22,7 @@ class Graph {
     }
     const newNode = new Node(this, data);
 
-    this.nodes.set(keyToSet ? keyToSet : newNode.id, newNode);
+    this.nodes.set(keyToSet || newNode.id, newNode);
     console.log(`Node ${keyField ? data[keyField] : data} was added`);
     return newNode;
   }
@@ -39,14 +39,18 @@ class Graph {
     return nodes;
   }
 
+  getNodes() {
+    return Array.from(this.nodes.values());
+  }
+
   // SELECT ONLY BY FIELDS NAME
   select(query) {
-    const { nodes: fullNodes, keyField } = this;
+    const { keyField } = this;
     if (!keyField) {
       throw new Error('Select method is used only for graphs with keyfields');
     }
 
-    const nodes = Array.from(fullNodes.values());
+    const nodes = this.getNodes();
     const fields = Array.isArray(query) ? query : [query];
 
     const answer = nodes.map((node) => {
@@ -61,8 +65,8 @@ class Graph {
   }
 
   selectByData(query) {
-    const { nodes: fullNodes, keyField } = this;
-    const nodes = Array.from(fullNodes.values());
+    const { keyField } = this;
+    const nodes = this.getNodes();
 
     if (!query || (keyField && typeof query !== 'object')) {
       return [];
@@ -79,11 +83,11 @@ class Graph {
             return false;
           }
         }
+
+        return true;
       } else {
         return query === data;
       }
-
-      return true;
     });
 
     return answer;
@@ -144,7 +148,8 @@ class Graph {
       throw new Error('Node must be instance of class "Node"');
     }
 
-    for (const node of this.nodes.values()) {
+    const nodes = this.getNodes();
+    for (const node of nodes) {
       if (Link.isExist(node, nodeToDelete)) {
         this.unlinkNodes(node, nodeToDelete);
       }
@@ -158,10 +163,10 @@ class Graph {
   }
 
   toString() {
-    const { nodes } = this;
+    const nodes = this.getNodes();
 
     console.log(`Graph ${this.name}:`);
-    for (const node of nodes.values()) {
+    for (const node of nodes) {
       console.log(node.toString());
     }
   }
@@ -171,7 +176,8 @@ class Graph {
       throw new Error('Argument must be instance of "Graph" class');
     }
 
-    for (const node of graph.nodes.values()) {
+    const nodes = graph.getNodes();
+    for (const node of nodes) {
       graph.deleteNode(node);
     }
 
