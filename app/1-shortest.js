@@ -86,7 +86,7 @@ function findShortestPath(source, target) {
 
   const { distance } = distances.get(target);
   const path = buildFullPath(target, distances);
-  return distance === Infinity ? null : { distance, path };
+  return Number.isFinite(distance) ? { distance, path } : null;
 }
 
 const cities = new Graph('CITIES');
