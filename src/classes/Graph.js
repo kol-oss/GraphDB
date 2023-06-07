@@ -39,13 +39,14 @@ class Graph {
     return nodes;
   }
 
+  // SELECT ONLY BY FIELDS NAME
   select(query) {
     const { nodes: fullNodes, keyField } = this;
-    const nodes = Array.from(fullNodes.values());
     if (!keyField) {
       throw new Error('Select method is used only for graphs with keyfields');
     }
 
+    const nodes = Array.from(fullNodes.values());
     const fields = Array.isArray(query) ? query : [query];
 
     const answer = nodes.map((node) => {
@@ -143,13 +144,15 @@ class Graph {
       throw new Error('Node must be instance of class "Node"');
     }
 
-    for (const node of this.nodes) {
+    for (const node of this.nodes.values()) {
       if (Link.isExist(node, nodeToDelete)) {
         this.unlinkNodes(node, nodeToDelete);
       }
     }
 
-    this.nodes.delete(nodeToDelete.data[this.keyField]);
+    const { keyField } = this;
+    const { id, data } = nodeToDelete;
+    this.nodes.delete(keyField ? data[keyField] : data[id]);
     console.log('Node was deleted');
     return this;
   }
@@ -168,7 +171,7 @@ class Graph {
       throw new Error('Argument must be instance of "Graph" class');
     }
 
-    for (const node of graph.nodes) {
+    for (const node of graph.nodes.values()) {
       graph.deleteNode(node);
     }
 
