@@ -99,9 +99,11 @@ class Graph {
         const link = new Link(target, weight, data);
         const { isDirected: directed } = this;
 
-        const { data: srcData, links: srcLinks } = source;
+        const { links: srcLinks } = source;
+        const srcData = source.getNodeKey();
+        const trgData = target.getNodeKey();
 
-        const linkString = `${srcData} ${directed ? '' : '<'}-> ${target.data}`;
+        const linkString = `${srcData} ${directed ? '' : '<'}-> ${trgData}`;
 
         if (source.hasLinkWith(target)) {
           console.log(`Link [${linkString}] already exist`);
@@ -168,6 +170,56 @@ class Graph {
     console.log(`Graph ${this.name}:`);
     for (const node of nodes) {
       console.log(node.toString());
+    }
+  }
+
+  toAdjMatrix() {
+    const nodes = this.getNodes();
+    const { isDirected } = this;
+
+    const length = nodes.length;
+    if (!length) return [];
+
+    const adjMatrix = new Array(length);
+    for (let i = 0; i < length; i++) {
+      adjMatrix[i] = new Array(length);
+    }
+
+    for (let i = 0; i < length; i++) {
+      for (let j = 0; j < (isDirected ? length : (i + 1)); j++) {
+        const source = nodes[i];
+        const target = nodes[j];
+
+        const value = Number(source.hasLinkWith(target));
+        adjMatrix[i][j] = value;
+
+        if (!isDirected) adjMatrix[j][i] = value;
+      }
+    }
+    return adjMatrix;
+  }
+
+  fromAdjMatrix(matrix) {
+    const { length } = matrix;
+    if (length !== matrix[0].length) {
+      throw new Error('Argument must be square matrix');
+    }
+
+    const addedNodes = [];
+    for (let i = 0; i < length; i++) {
+      const newNode = this.addNode();
+      addedNodes.push(newNode);
+    }
+
+    for (let i = 0; i < length; i++) {
+      for (let j = 0; j < length; j++) {
+        const value = matrix[i][j];
+        if (value) {
+          this
+            .linkNode(addedNodes[i])
+            .with(addedNodes[j], value);
+        }
+      }
     }
   }
 

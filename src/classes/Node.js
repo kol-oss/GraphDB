@@ -17,6 +17,10 @@ class Node {
     }
   }
 
+  getNodeKey() {
+    return this.getData() | this.id;
+  }
+
   getData() {
     const { graph } = this;
     const { keyField } = graph;
@@ -26,20 +30,30 @@ class Node {
   }
 
   toString() {
-    const { links, data: nodeData } = this;
-    let stringified = `Node ${this.getData()}:\n> Data: ${nodeData}`;
+    const { data, links, graph, id } = this;
+    const { keyField } = graph;
+    const srcDataByKey = this.getNodeKey();
+
+    // HOW REWORK IT?
+    let result = `=== Node ${srcDataByKey} ===\n`;
+
+    result += keyField ? `Key (${keyField}): ${this.getData()}` : `ID: ${id}`;
+
+    result += `\n> Data: ${JSON.stringify(data)}\n`;
+    result += '> Connections:';
 
     for (const link of links) {
       const { target, weight, data: linkData } = link;
+      const trgDataByKey = target.getNodeKey();
 
-      stringified += `\n-> ${target.getData()} (${weight})`;
+      result += `\n+ id: ${trgDataByKey} -> (w: ${weight})`;
 
       if (linkData) {
-        stringified += ` (${linkData})`;
+        result += ` (d: ${linkData})`;
       }
     }
 
-    return stringified;
+    return result;
   }
 
   getLinkedNodes() {
@@ -58,6 +72,7 @@ class Node {
         return true;
       }
     }
+    return false;
   }
 }
 

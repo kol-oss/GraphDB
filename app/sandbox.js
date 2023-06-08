@@ -2,20 +2,27 @@
 
 const { Graph } = require('../src/classes/Graph');
 
-const cities = [
+const citiesAsObj = [
   { 'name': 'London', 'country': 'UK', 'language': 'English' },
   { 'name': 'Washington', 'country': 'US', 'language': 'English' },
   { 'name': 'Berlin', 'country': 'GR', 'language': 'German' },
   { 'name': 'Rome', 'country': 'IT', 'language': 'Italian' },
 ];
 
-const values = [ 'LONDON', 'PARIS', 'BERLIN', 'ROME'];
+// CREATE UNDIRECTED GRAPH WITH KEYFIELD
+const graph = new Graph('CITIES', true, 'name');
+const [l, w, b, r] = graph.addManyNodes(citiesAsObj);
 
-const graph = new Graph('CITIES', false, 'country');
-const [ london, paris, berlin, rome ] = graph.addManyNodes(cities);
+graph.linkNode(l).with(w);
+graph.linkNode(l).with(l);
+graph.linkNode(l).with(b);
 
-graph.linkNode(london).with(paris);
-graph.linkNode(berlin).with(rome);
+const adjMatrix = graph.toAdjMatrix();
+console.log('Adjacency matrix:');
+console.table(adjMatrix);
 
-console.log('RESULT OF SEARCHING:');
-console.log(graph.select(['name', 'language']));
+const copyGraph = new Graph('CITIES', true);
+copyGraph.fromAdjMatrix(adjMatrix);
+console.table(adjMatrix);
+
+console.log(graph.toString());
