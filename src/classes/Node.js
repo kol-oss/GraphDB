@@ -15,6 +15,7 @@ class Node {
       if (link.target === target)
         return link;
     }
+    return false;
   }
 
   getNodeKey() {
@@ -64,15 +65,6 @@ class Node {
     }
 
     return linked;
-  }
-
-  hasLinkWith(target) {
-    for (const link of this.links) {
-      if (link.target === target) {
-        return true;
-      }
-    }
-    return false;
   }
 }
 

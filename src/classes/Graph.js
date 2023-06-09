@@ -23,7 +23,7 @@ class Graph {
     const newNode = new Node(this, data);
 
     this.nodes.set(keyToSet || newNode.id, newNode);
-    const identifier = keyField ? data[keyField] : data | newNode.id;
+    const identifier = newNode.getNodeKey();
     console.log(`Node ${identifier} was added`);
     return newNode;
   }
@@ -107,34 +107,32 @@ class Graph {
 
         const linkString = `${srcData} ${directed ? '' : '<'}-> ${trgData}`;
 
-        if (source.hasLinkWith(target)) {
+        if (source.getLinkTo(target)) {
           console.log(`Link [${linkString}] already exist`);
-          return this;
-        }
+        } else {
+          srcLinks.add(link);
 
-        srcLinks.add(link);
+          if (!directed) {
+            const reversed = new Link(source, weight, data);
+            const { links: targetLinks } = target;
 
-        console.log(this.isDirected);
-        if (!directed) {
-          const reversed = new Link(source, weight, data);
-          const { links: targetLinks } = target;
-
-          if (!target.hasLinkWith(source)) {
-            targetLinks.add(reversed);
+            if (!target.getLinkTo(source)) {
+              targetLinks.add(reversed);
+            }
           }
-        }
 
-        console.log(`Create link ${linkString}`);
+          console.log(`Create link ${linkString}`);
+        }
         return this;
       }
     };
   }
 
   unlinkInOneDirection(source, target) {
-    if (source.hasLinkWith(target)) {
+    const link = source.getLinkTo(target);
+    if (link) {
       const { links: srcLinks } = source;
 
-      const link = source.getLinkTo(target);
       srcLinks.delete(link);
     }
   }
@@ -154,7 +152,7 @@ class Graph {
 
     const nodes = this.getNodes();
     for (const node of nodes) {
-      if (node.hasLinkWith(nodeToDelete)) {
+      if (node.getLinkTo(nodeToDelete)) {
         this.unlinkNodes(node, nodeToDelete);
       }
     }
@@ -193,8 +191,9 @@ class Graph {
         const target = nodes[j];
 
         let value = 0;
-        if (source.hasLinkWith(target)) {
-          value =  withWeights ? source.getLinkTo(target).weight : 1;
+        const link = source.getLinkTo(target);
+        if (link) {
+          value =  withWeights ? link.weight : 1;
         }
         adjMatrix[i][j] = value;
 
