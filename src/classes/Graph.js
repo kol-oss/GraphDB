@@ -23,7 +23,8 @@ class Graph {
     const newNode = new Node(this, data);
 
     this.nodes.set(keyToSet || newNode.id, newNode);
-    console.log(`Node ${keyField ? data[keyField] : data} was added`);
+    const identifier = keyField ? data[keyField] : data | newNode.id;
+    console.log(`Node ${identifier} was added`);
     return newNode;
   }
 
@@ -98,7 +99,7 @@ class Graph {
     return {
       with(target, weight = 1, data = undefined) {
         const link = new Link(target, weight, data);
-        const { isDirected: directed } = this;
+        const { isDirected: directed } = source.graph;
 
         const { links: srcLinks } = source;
         const srcData = source.getNodeKey();
@@ -108,11 +109,12 @@ class Graph {
 
         if (source.hasLinkWith(target)) {
           console.log(`Link [${linkString}] already exist`);
-          return;
+          return this;
         }
 
         srcLinks.add(link);
 
+        console.log(this.isDirected);
         if (!directed) {
           const reversed = new Link(source, weight, data);
           const { links: targetLinks } = target;
