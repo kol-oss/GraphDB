@@ -64,6 +64,7 @@ class Graph {
     return answer;
   }
 
+  // SELECT BY DATA
   selectByData(query) {
     const { keyField } = this;
     const nodes = this.getNodes();
@@ -112,7 +113,6 @@ class Graph {
 
         srcLinks.add(link);
 
-        // CHECK FOR UNDIRECTED
         if (!directed) {
           const reversed = new Link(source, weight, data);
           const { links: targetLinks } = target;
@@ -173,7 +173,7 @@ class Graph {
     }
   }
 
-  toAdjMatrix() {
+  toAdjMatrix(withWeights = true) {
     const nodes = this.getNodes();
     const { isDirected } = this;
 
@@ -182,7 +182,7 @@ class Graph {
 
     const adjMatrix = new Array(length);
     for (let i = 0; i < length; i++) {
-      adjMatrix[i] = new Array(length);
+      adjMatrix[i] = new Array(length).fill(0);
     }
 
     for (let i = 0; i < length; i++) {
@@ -190,7 +190,10 @@ class Graph {
         const source = nodes[i];
         const target = nodes[j];
 
-        const value = Number(source.hasLinkWith(target));
+        let value = 0;
+        if (source.hasLinkWith(target)) {
+          value =  withWeights ? source.getLinkTo(target).weight : 1;
+        }
         adjMatrix[i][j] = value;
 
         if (!isDirected) adjMatrix[j][i] = value;
@@ -221,6 +224,80 @@ class Graph {
         }
       }
     }
+  }
+
+  toIncidenceMatrix(withWeights = true) {
+    const links = this.getUniqueLinks();
+    const nodes = this.getNodes();
+
+    const { length: nodesLength } = nodes;
+    const { length: linksLength } = links;
+
+    const incidenceMatrix = new Array(nodes.length);
+    for (let i = 0; i < nodesLength; i++) {
+      incidenceMatrix[i] = new Array(linksLength).fill(0);
+    }
+
+    for (let i = 0; i < nodesLength; i++) {
+      for (let j = 0; j < linksLength; j++) {
+        const source = nodes[i];
+        const link = links[j];
+
+        if ((source === link.source) || (source === link.target)) {
+          incidenceMatrix[i][j] = withWeights ? link.weight : 1;
+        }
+      }
+    }
+
+    return incidenceMatrix;
+  }
+
+  getUniqueLinks() {
+    const { links } = this;
+    const uniqueLinks = new Map();
+
+    for (const link of links) {
+      const { source, target, weight, data } = link;
+      const { id: sourceId } = source;
+      const { id: targetId } = target;
+
+      const begin = sourceId < targetId ? source : target;
+      const end = sourceId < targetId ? target : source;
+
+      // IS IT OKEY?
+      const key = `${begin.id}-${end.id}`;
+      uniqueLinks.set(key, {
+        source: begin,
+        target: end,
+        weight,
+        data,
+      });
+    }
+
+    return Array.from(uniqueLinks.values());
+  }
+
+  get links() {
+    const nodes = this.getNodes();
+    const linksList = new Array();
+
+    for (const node of nodes) {
+      const { links } = node;
+      for (const link of links) {
+        const { target, weight, data } = link;
+
+        const linkElement = {
+          source: node,
+          target,
+          weight,
+          data
+        };
+
+        linksList.push(linkElement);
+      }
+    }
+
+    return linksList;
   }
 
   static clearGraph(graph) {

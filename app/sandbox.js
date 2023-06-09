@@ -9,20 +9,23 @@ const citiesAsObj = [
   { 'name': 'Rome', 'country': 'IT', 'language': 'Italian' },
 ];
 
-// CREATE UNDIRECTED GRAPH WITH KEYFIELD
+
 const graph = new Graph('CITIES', true, 'name');
 const [l, w, b, r] = graph.addManyNodes(citiesAsObj);
 
-graph.linkNode(l).with(w);
-graph.linkNode(l).with(l);
-graph.linkNode(l).with(b);
+graph.linkNode(l).with(w, 2);
+graph.linkNode(l).with(l, 4);
+graph.linkNode(l).with(r, 5);
+graph.linkNode(l).with(b, 2);
 
-const adjMatrix = graph.toAdjMatrix();
+const incMatrix = graph.toIncidenceMatrix();
+console.table(incMatrix);
+
+/*
+const adjMatrix = graph.toAdjMatrix(false);
+const weightMatrix = graph.toAdjMatrix(false);
 console.log('Adjacency matrix:');
 console.table(adjMatrix);
 
-const copyGraph = new Graph('CITIES', true);
-copyGraph.fromAdjMatrix(adjMatrix);
-console.table(adjMatrix);
-
-console.log(graph.toString());
+console.log('Adjacency matrix:');
+console.table(weightMatrix);*/
