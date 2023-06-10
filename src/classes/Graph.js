@@ -79,13 +79,14 @@ class Graph {
     const answer = nodes.filter((node) => {
       const { data } = node;
 
-      if (keys.includes(keyField)) {
-        const keyData = data[keyField];
-        if (keyData !== query[keyField]) {
-          return false;
-        }
-      }
       if (typeof data === 'object') {
+        if (keys.includes(keyField)) {
+          const keyData = data[keyField];
+          if (keyData !== query[keyField]) {
+            return false;
+          }
+        }
+
         for (const condition of keys) {
           if (query[condition] !== data[condition]) {
             return false;
@@ -282,6 +283,13 @@ class Graph {
     }
 
     return Array.from(uniqueLinks.values());
+  }
+
+  copyGraphStructure() {
+    const { name, isDirected, keyField } = this;
+    const copiedGraph = new Graph(name, isDirected, keyField);
+
+    return copiedGraph;
   }
 
   get links() {
