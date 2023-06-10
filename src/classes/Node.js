@@ -7,7 +7,7 @@ class Node {
     this.id = counter++;
     this.data = data;
     this.graph = graph;
-    this.links = new Set();
+    this.links = new Set(); // can be replaced with Array
   }
 
   getLinkTo(target) {
