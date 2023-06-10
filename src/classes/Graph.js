@@ -79,6 +79,12 @@ class Graph {
     const answer = nodes.filter((node) => {
       const { data } = node;
 
+      if (keys.includes(keyField)) {
+        const keyData = data[keyField];
+        if (keyData !== query[keyField]) {
+          return false;
+        }
+      }
       if (typeof data === 'object') {
         for (const condition of keys) {
           if (query[condition] !== data[condition]) {
